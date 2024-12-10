@@ -1,0 +1,53 @@
+(*Generation if Identity Key Based on Pin Code Secrect Value *)
+type pr.
+type pu.
+type pc.
+free ik_salt: bitstring.
+free PinCode:pc [private].
+free ik_a_pr:pc [private].
+free ik_b_pr:pc [private].
+free spk_b_pr:pc [private].
+query attacker(PinCode).
+
+fun pk(pr): pu.
+fun sign(bitstring , pr ): bitstring.
+free c:channel.
+type G.
+type exponent.
+type shared_secrect.
+type key.
+query attacker(ik_b_pr).
+
+fun prk(pc): pr.
+fun genCurve25519_X( pr,pc, bitstring,pu ) : pu.
+fun genCurve25519_Y( pr,pc, bitstring,pu ) : pr.
+fun aenc(bitstring , pu): bitstring .
+
+(*Single Diffie Hellman Calculation *)
+const g: G [data].
+fun exp(G, exponent): G.
+equation forall x: exponent , y: exponent;
+ exp(exp(g,x),y) = exp(exp(g,y),x).
+ reduc forall m: bitstring , k: pr; getmess(sign(m,k)) = m.
+ reduc forall m: bitstring , k: pr; checksign(sign(m,k),pk(k)) = m.
+ reduc forall m: bitstring , k: pr; adec(aenc(m, pk(k)) ,k) = m.
+ fun sdec(bitstring,key):bitstring.
+let serverB(pkB:pu ,skB: pr) =
+ in(c ,pkX: pu );
+ new k:key;
+ out(c , aenc( sign ((pkB,k) ,skB) ,pkX));
+ in(c ,x: bitstring );
+ let z = sdec(x,k) in
+ 0.
+query attacker(spk_b_pr).
+query attacker(ik_a_pr).
+ process 
+  let x_ik_A=genCurve25519_X(prk(PinCode),PinCode,ik_salt,pk(prk(PinCode))) in
+  out(c, x_ik_A);  out(c, ik_salt); 
+  let y_ik_A=genCurve25519_Y(prk(PinCode),PinCode,ik_salt,pk(prk(PinCode))) in
+  let x_ik_B=genCurve25519_Y(prk(PinCode),PinCode,ik_salt,pk(prk(PinCode))) in
+    out(c, x_ik_B);  out(c, ik_salt); 
+  let y_ik_B=genCurve25519_Y(prk(PinCode),PinCode,ik_salt,pk(prk(PinCode))) in
+  0
+  
+  
